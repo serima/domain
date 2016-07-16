@@ -1,20 +1,36 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
-	"github.com/domainr/whois"
+	"github.com/likexian/whois-go"
+	"github.com/likexian/whois-parser-go"
 )
 
+type Response struct {
+	DomainStatus   string `json:"domainStatus"`
+	CreatedDate    string `json:"createdDate"`
+	ExpirationDate string `json:"expirationDate"`
+	Name           string `json:"name"`
+	Email          string `json:"email"`
+}
+
 func main() {
-	query := "domai.nr"
-	request, err := whois.NewRequest(query)
+	whoisRaw, err := whois.Whois("serima.co")
 	FatalIf(err)
-	response, err := whois.DefaultClient.Fetch(request)
-	FatalIf(err)
-	body := response.String()
-	fmt.Println(body)
+	result, err := whois_parser.Parser(whoisRaw)
+	if err == nil {
+		res2D := &Response{
+			DomainStatus:   result.Registrar.DomainStatus,
+			CreatedDate:    result.Registrar.CreatedDate,
+			ExpirationDate: result.Registrar.ExpirationDate,
+			Name:           result.Registrant.Name,
+			Email:          result.Registrant.Email}
+		res2B, _ := json.Marshal(res2D)
+		fmt.Println(string(res2B))
+	}
 }
 
 func FatalIf(err error) {
