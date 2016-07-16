@@ -9,6 +9,7 @@ import (
 	"github.com/likexian/whois-parser-go"
 )
 
+// Response : struct of json response
 type Response struct {
 	DomainStatus   string `json:"domainStatus"`
 	CreatedDate    string `json:"createdDate"`
@@ -21,18 +22,18 @@ func main() {
 	whoisRaw, err := whois.Whois("serima.co")
 	FatalIf(err)
 	result, err := whois_parser.Parser(whoisRaw)
-	if err == nil {
-		res2D := &Response{
-			DomainStatus:   result.Registrar.DomainStatus,
-			CreatedDate:    result.Registrar.CreatedDate,
-			ExpirationDate: result.Registrar.ExpirationDate,
-			Name:           result.Registrant.Name,
-			Email:          result.Registrant.Email}
-		res2B, _ := json.Marshal(res2D)
-		fmt.Println(string(res2B))
-	}
+	FatalIf(err)
+	res := &Response{
+		DomainStatus:   result.Registrar.DomainStatus,
+		CreatedDate:    result.Registrar.CreatedDate,
+		ExpirationDate: result.Registrar.ExpirationDate,
+		Name:           result.Registrant.Name,
+		Email:          result.Registrant.Email}
+	resJSON, _ := json.Marshal(res)
+	fmt.Println(string(resJSON))
 }
 
+// FatalIf : exit, if error occurs
 func FatalIf(err error) {
 	if err == nil {
 		return
