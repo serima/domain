@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 
@@ -19,7 +20,10 @@ type Response struct {
 }
 
 func main() {
-	whoisRaw, err := whois.Whois("serima.co")
+	var domain = flag.String("d", "google.com", "domain")
+	flag.Parse()
+
+	whoisRaw, err := whois.Whois(*domain)
 	FatalIf(err)
 	result, err := whois_parser.Parser(whoisRaw)
 	FatalIf(err)
